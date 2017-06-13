@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
-from .entailment.snli_dataset import SnliDataset
-from .language_modeling.language_modeling_dataset import LanguageModelingDataset
+from .snli_dataset import SnliDataset
+from .language_modeling_dataset import LanguageModelingDataset
 from .dataset import Dataset, TextDataset, IndexedDataset
 
 

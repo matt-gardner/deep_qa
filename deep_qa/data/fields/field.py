@@ -22,10 +22,15 @@ import numpy
 
 from ..vocabulary import Vocabulary
 
-# Because of how the dependencies work between these objects, we're defining them in reverse order,
-# so that UnindexedField can reference IndexedField in its return types.
+class Field:
+    """
+    This class is just a type placeholder, so that ``Datasets`` can refer to a type that
+    encompasses both indexed and un-indexed fields.  Not strictly necessary in python, but nice for
+    readability.
+    """
+    pass
 
-class IndexedField:
+class IndexedField(Field):
     """
     An ``IndexedField`` is a field that is almost ready to be put into a data array for use in a
     model.  The only thing missing is padding.  The methods on this object allow you to get padding
@@ -51,7 +56,7 @@ class IndexedField:
         raise NotImplementedError
 
 
-class UnindexedField:
+class UnindexedField(Field):
     """
     An ``UnindexedField`` is a field that still has strings instead of token ids.  We use these
     fields to compute vocabularies, and then convert them into ``IndexedFields``, from which we can

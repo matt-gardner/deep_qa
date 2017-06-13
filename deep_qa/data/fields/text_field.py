@@ -9,7 +9,7 @@ import numpy
 
 from ..token_indexers import TokenIndexer, TokenType
 from ..vocabulary import Vocabulary
-from .field import UnindexedField, IndexedField
+from . import UnindexedField, IndexedField
 
 
 
