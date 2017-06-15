@@ -6,18 +6,16 @@ import numpy
 import tqdm
 
 from ...common.util import add_noise_to_dict_values
-from .. import Vocabulary
-from .. import Instance
+from . import Instance, Vocabulary
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 
 class Dataset:
     """
-    A collection of Instances.
-
-    This base class has general methods that apply to all collections of Instances.  That basically
-    is just methods that operate on sets, like merging and truncating.
+    A collection of :class:`Instance` objects.  The ``Instances`` have ``Fields``, and the fields
+    could be in an indexed or unindexed state - the ``Dataset`` has methods around indexing the
+    data and converting the data into arrays.
     """
     def __init__(self, instances: List[Instance]):
         """
@@ -53,6 +51,7 @@ class Dataset:
         ``sorting_keys`` (in the order in which they are provided).  ``sorting_keys`` is a list of
         ``(field_name, padding_key)`` tuples.
         """
+        # TODO(matt): this code should probably go into the data generator.
         instances_with_lengths = []
         for instance in self.instances:
             padding_lengths = instance.get_padding_lengths()
