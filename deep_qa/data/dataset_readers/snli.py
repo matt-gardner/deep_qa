@@ -7,7 +7,7 @@ from . import DatasetReader
 from .. import Dataset
 from .. import Instance
 from ...common import Params
-from ..fields import TokenizedTextField, StringLabelField
+from ..fields import TextField, LabelField
 from ..token_indexers import TokenIndexer, SingleIdTokenIndexer
 from ..tokenizers import Tokenizer, WordTokenizer
 
@@ -45,14 +45,12 @@ class SnliReader(DatasetReader):
                 example = json.loads(line)
 
                 label = example["gold_label"]
-                label_field = StringLabelField(label)
+                label_field = LabelField(label)
 
                 premise = example["sentence1"]
-                premise_field = TokenizedTextField(self._tokenizer.tokenize(premise),
-                                                   self._token_indexers)
+                premise_field = TextField(self._tokenizer.tokenize(premise), self._token_indexers)
                 hypothesis = example["sentence2"]
-                hypothesis_field = TokenizedTextField(self._tokenizer.tokenize(hypothesis),
-                                                      self._token_indexers)
+                hypothesis_field = TextField(self._tokenizer.tokenize(hypothesis), self._token_indexers)
                 instances.append(Instance({'label': label_field,
                                            'premise': premise_field,
                                            'hypothesis': hypothesis_field}))

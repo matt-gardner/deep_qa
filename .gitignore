@@ -5,5 +5,3 @@
 .cache/
 .coverage
 _build
-old_tokenizers/
-old_instances/

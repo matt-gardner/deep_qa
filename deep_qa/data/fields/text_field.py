@@ -7,12 +7,12 @@ from typing import Dict, List
 from overrides import overrides
 import numpy
 
-from . import Field
+from . import SequenceField
 from .. import Vocabulary
 from ..token_indexers import TokenIndexer
 
 
-class TextField(Field):
+class TextField(SequenceField):
     """
     This ``Field`` represents a list of string tokens.  Before constructing this object, you need
     to tokenize raw strings using a :class:`..tokenizers.Tokenizer`.
@@ -58,6 +58,10 @@ class TextField(Field):
             padding_lengths[key] = max(x[key] if key in x else 0 for x in indexer_lengths)
 
     @overrides
+    def sequence_length(self, padding_lengths: Dict[str, int]) -> int:
+        return padding_lengths['num_tokens']
+
+    @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:
         arrays = []
         desired_num_tokens = padding_lengths['num_tokens']
@@ -65,3 +69,10 @@ class TextField(Field):
             padded_array = indexer.pad_token_sequence(array, desired_num_tokens, padding_lengths)
             arrays.append(numpy.asarray(padded_array))
         return arrays
+
+    @overrides
+    def empty_field(self):
+        # pylint: disable=protected-access
+        text_field = TextField([], self._token_indexers)
+        text_field._indexed_tokens = []
+        return text_field

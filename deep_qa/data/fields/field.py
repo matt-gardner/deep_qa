@@ -68,3 +68,16 @@ class Field:
         word array and a characters-per-word array).
         """
         raise NotImplementedError
+
+    def empty_field(self) -> 'Field':
+        """
+        So that ``ListField`` can pad the number of fields in a list (e.g., the number of answer
+        option ``TextFields``), we need a representation of an empty field of each type.  This
+        returns that.  This will only ever be called when we're to the point of calling
+        :func:`pad`, so you don't need to worry about ``get_padding_lengths``,
+        ``count_vocab_items``, etc., being called on this empty field.
+
+        We make this an instance method instead of a static method so that if there is any state
+        in the Field, we can copy it over (e.g., the token indexers in ``TextField``).
+        """
+        raise NotImplementedError

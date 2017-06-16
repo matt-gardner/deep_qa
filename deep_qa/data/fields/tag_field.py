@@ -3,21 +3,20 @@ from typing import Dict, List
 from overrides import overrides
 import numpy
 
-from . import Field
+from . import Field, SequenceField
 from .. import Vocabulary
 from ...common.util import pad_sequence_to_length
-from .text_field import TextField
 
 
 class TagField(Field):
     """
-    A ``TagField`` assigns a categorical label to each element in a tokenized sequence.  Because
-    it's a labeling of some other field, we take that field as input here, and we use it to
+    A ``TagField`` assigns a categorical label to each element in a :class:`SequenceField`.
+    Because it's a labeling of some other field, we take that field as input here, and we use it to
     determine our padding and other things.
     """
-    def __init__(self, tags: List[str], text_field: TextField, tag_namespace: str='tags'):
+    def __init__(self, tags: List[str], sequence_field: SequenceField, tag_namespace: str='tags'):
         self._tags = tags
-        self._text_field = text_field
+        self._sequence_field = sequence_field
         self._tag_namespace = tag_namespace
         self._indexed_tags = None
 
@@ -36,8 +35,8 @@ class TagField(Field):
 
     @overrides
     def get_padding_lengths(self) -> Dict[str, int]:
-        return {'num_tokens': self._text_field.get_padding_lengths()['num_tokens'],
-                'num_tags': max(self._indexed_tags)}
+        num_tokens = self._sequence_field.sequence_length(self._sequence_field.get_padding_lengths())
+        return {'num_tokens': num_tokens, 'num_tags': max(self._indexed_tags)}
 
     @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:
@@ -49,3 +48,10 @@ class TagField(Field):
             one_hot_tag[tag] = 1
             one_hot_tags.append(one_hot_tag)
         return numpy.asarray(one_hot_tags)
+
+    @overrides
+    def empty_field(self):
+        # pylint: disable=protected-access
+        tag_field = TagField([], None)
+        tag_field._indexed_tags = []
+        return tag_field

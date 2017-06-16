@@ -53,3 +53,7 @@ class LabelField(Field):
         label_array = numpy.zeros(padding_lengths['num_labels'])
         label_array[self._label_id] = 1
         return [label_array]
+
+    @overrides
+    def empty_field(self):
+        return LabelField(0, 'labels', False)
