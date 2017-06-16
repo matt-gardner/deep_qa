@@ -20,8 +20,7 @@ class IndexField(Field):
 
     @overrides
     def get_padding_lengths(self) -> Dict[str, int]:
-        num_options = self._sequence_field.sequence_length(self._sequence_field.get_padding_lengths())
-        return {'num_options': num_options}
+        return {'num_options': self._sequence_field.sequence_length()}
 
     @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:

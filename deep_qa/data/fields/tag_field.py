@@ -19,6 +19,8 @@ class TagField(Field):
         self._sequence_field = sequence_field
         self._tag_namespace = tag_namespace
         self._indexed_tags = None
+        assert len(tags) == sequence_field.sequence_length(), "Tag length and sequence length " +\
+                "don't match: %d and %d" % (len(tags), sequence_field.sequence_length())
 
     @overrides
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
@@ -31,8 +33,8 @@ class TagField(Field):
 
     @overrides
     def get_padding_lengths(self) -> Dict[str, int]:
-        num_tokens = self._sequence_field.sequence_length(self._sequence_field.get_padding_lengths())
-        return {'num_tokens': num_tokens, 'num_tags': max(self._indexed_tags)}
+        return {'num_tokens': self._sequence_field.sequence_length(),
+                'num_tags': max(self._indexed_tags)}
 
     @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:

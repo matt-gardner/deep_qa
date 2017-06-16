@@ -38,8 +38,8 @@ class ListField(SequenceField):
         return padding_lengths
 
     @overrides
-    def sequence_length(self, padding_lengths: Dict[str, int]) -> int:
-        return padding_lengths['num_fields']
+    def sequence_length(self) -> int:
+        return len(self._field_list)
 
     @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:

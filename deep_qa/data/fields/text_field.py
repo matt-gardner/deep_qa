@@ -54,8 +54,8 @@ class TextField(SequenceField):
             padding_lengths[key] = max(x[key] if key in x else 0 for x in indexer_lengths)
 
     @overrides
-    def sequence_length(self, padding_lengths: Dict[str, int]) -> int:
-        return padding_lengths['num_tokens']
+    def sequence_length(self) -> int:
+        return len(self._tokens)
 
     @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:
