@@ -9,13 +9,15 @@ class Field:
     A ``Field`` is some piece of a data instance that ends up as an array in a model (either as an
     input or an output).  Data instances are just collections of fields.
 
+    Fields go through up to two steps of processing: (1) tokenized fields are converted into token
+    ids, (2) fields containing token ids (or any other numeric data) are padded (if necessary) and
+    converted into data arrays.  The ``Field`` API has methods around both of these steps,
+    though they may not be needed for some concrete ``Field`` classes - if your field doesn't have
+    any strings that need indexing, you don't need to implement ``count_vocab_items`` or ``index``.
+    These methods ``pass`` by default.
 
-    Fields go through up to two steps of processing: (1) tokenized fields are converted into token ids,
-    (2) fields containing token ids (or any other numeric data) are padded (if necessary) and converted
-    into data arrays.  The ``Field`` object has methods to say which state the field is in, and to get
-    it from one state to the other.  If ``Field.needs_indexing()``, we will compute a vocabulary and
-    pass it to the field to use for indexing.  Once all fields are indexed, we will determine padding
-    lengths, then intelligently batch together instances and pad them into actual arrays.
+    Once a vocabulary is computed and all fields are indexed, we will determine padding lengths,
+    then intelligently batch together instances and pad them into actual arrays.
     """
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
         """
