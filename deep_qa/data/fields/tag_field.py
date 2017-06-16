@@ -21,10 +21,6 @@ class TagField(Field):
         self._indexed_tags = None
 
     @overrides
-    def needs_indexing(self):
-        return self._indexed_tags is None
-
-    @overrides
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
         for tag in self._tags:
             counter[self._tag_namespace][tag] += 1
@@ -41,7 +37,7 @@ class TagField(Field):
     @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:
         desired_num_tokens = padding_lengths['num_tokens']
-        padded_tags = pad_sequence_to_length(self._indexed_tags, desired_num_tokens, default_value=0)
+        padded_tags = pad_sequence_to_length(self._indexed_tags, desired_num_tokens)
         one_hot_tags = []
         for tag in padded_tags:
             one_hot_tag = [0] * padding_lengths['num_tags']

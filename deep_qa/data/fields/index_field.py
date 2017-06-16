@@ -19,10 +19,6 @@ class IndexField(Field):
         self._sequence_field = sequence_field
 
     @overrides
-    def needs_indexing(self):
-        return False
-
-    @overrides
     def get_padding_lengths(self) -> Dict[str, int]:
         num_options = self._sequence_field.sequence_length(self._sequence_field.get_padding_lengths())
         return {'num_options': num_options}

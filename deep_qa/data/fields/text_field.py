@@ -28,10 +28,6 @@ class TextField(SequenceField):
         self._indexed_tokens = None
 
     @overrides
-    def needs_indexing(self):
-        return self._indexed_tokens is None
-
-    @overrides
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
         for indexer in self._token_indexers:
             for token in self._tokens:

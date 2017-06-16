@@ -53,7 +53,7 @@ class SingleIdTokenIndexer(TokenIndexer):
                            tokens: List[TokenType],
                            desired_num_tokens: int,
                            padding_lengths: Dict[str, int]) -> List[TokenType]:
-        return pad_sequence_to_length(tokens, desired_num_tokens, default_value=0)
+        return pad_sequence_to_length(tokens, desired_num_tokens)
 
     @classmethod
     def from_params(cls, params: Params):

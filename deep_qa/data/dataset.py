@@ -5,7 +5,7 @@ from typing import Dict, List
 import numpy
 import tqdm
 
-from ...common.util import add_noise_to_dict_values
+from ..common.util import add_noise_to_dict_values
 from . import Instance, Vocabulary
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
@@ -28,14 +28,12 @@ class Dataset:
 
     def truncate(self, max_instances: int):
         """
-        If there are more instances than `max_instances` in this dataset, returns a new dataset
-        with a random subset of size `max_instances`.  If there are fewer than `max_instances`
-        already, we just return self.
+        If there are more instances than ``max_instances`` in this dataset, we truncate the
+        instances to the first ``max_instances``.  This `modifies` the current object, and returns
+        nothing.
         """
-        if len(self.instances) <= max_instances:
-            return self
-        new_instances = [i for i in self.instances]
-        return self.__class__(new_instances[:max_instances])
+        if len(self.instances) > max_instances:
+            self.instances = self.instances[:max_instances]
 
     def index_instances(self, vocab: Vocabulary):
         """
@@ -66,8 +64,14 @@ class Dataset:
         instances_with_lengths.sort(key=lambda x: x[:-1])
         self.instances = [instance_with_lengths[-1] for instance_with_lengths in instances_with_lengths]
 
-    def padding_lengths(self):
-        padding_lengths = {}
+    def padding_lengths(self) -> Dict[str, Dict[str, int]]:
+        """
+        Gets the maximum padding lengths from all ``Instances`` in this dataset.  Each ``Instance``
+        has multiple ``Fields``, and each ``Field`` could have multiple things that need padding.
+        We look at all fields in all instances, and find the max values for each (field_name,
+        padding_key) pair, returning them in a dictionary.
+        """
+        padding_lengths = defaultdict(dict)
         all_instance_lengths = [instance.get_padding_lengths() for instance in self.instances]
         if not all_instance_lengths:
             return padding_lengths

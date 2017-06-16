@@ -33,10 +33,6 @@ class LabelField(Field):
             self._label_id = label
 
     @overrides
-    def needs_indexing(self):
-        return self._label_id is None
-
-    @overrides
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
         counter[self._label_namespace][self._label] += 1
 

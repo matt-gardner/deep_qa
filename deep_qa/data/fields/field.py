@@ -17,37 +17,26 @@ class Field:
     pass it to the field to use for indexing.  Once all fields are indexed, we will determine padding
     lengths, then intelligently batch together instances and pad them into actual arrays.
     """
-    def needs_indexing(self):
-        """
-        If there are strings in this ``Field`` that need to be indexed, you must return ``True``
-        here; else return ``False``.
-        """
-        raise NotImplementedError
-
-    # pylint: disable=no-self-use,unused-argument
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
         """
         If there are strings in this field that need to be converted into integers through a
         :class:`Vocabulary`, here is where we count them, to determine which tokens are in or out
         of the vocabulary.
 
-        Only called if ``self.needs_indexing()`` returns ``True``.  Because of this, we raise a
-        ``RuntimeError`` here instead of a ``NotImplementedError``, because fields that are already
-        indexed don't need to implement this.
+        If your ``Field`` does not have any strings that need to be converted into indices, you do
+        not need to implement this method.
         """
-        raise RuntimeError("You need to implement this method, or return False in needs_indexing")
+        pass
 
     def index(self, vocab: Vocabulary):
         """
         Given a :class:`Vocabulary`, converts all strings in this field into (typically) integers.
         This `modifies` the ``Field`` object, it does not return anything.
 
-        Only called if ``self.needs_indexing()`` returns ``True``.  Because of this, we raise a
-        ``RuntimeError`` here instead of a ``NotImplementedError``, because fields that are already
-        indexed don't need to implement this.
+        If your ``Field`` does not have any strings that need to be converted into indices, you do
+        not need to implement this method.
         """
-        raise RuntimeError("You need to implement this method, or return False in needs_indexing")
-    # pylint: enable=no-self-use,unused-argument
+        pass
 
     def get_padding_lengths(self) -> Dict[str, int]:
         """

@@ -1,7 +1,6 @@
 from typing import List
 
 from . import tokenizers
-
 from ...common import Params
 
 

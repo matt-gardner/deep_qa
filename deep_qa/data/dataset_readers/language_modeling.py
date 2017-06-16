@@ -6,7 +6,7 @@ from . import DatasetReader
 from .. import Dataset
 from .. import Instance
 from ...common import Params
-from ..fields import TokenizedTextField
+from ..fields import TextField
 from ..token_indexers import TokenIndexer, SingleIdTokenIndexer
 from ..tokenizers import Tokenizer, WordTokenizer
 
@@ -82,9 +82,9 @@ class LanguageModelingReader(DatasetReader):
             output_indexer = SingleIdTokenIndexer()
 
         instances = []
-        for tokenized_string in tokenized_string:
-            input_field = TokenizedTextField(tokenized_string[:-1], self._token_indexers)
-            output_field = TokenizedTextField(tokenized_string[1:], [output_indexer])
+        for tokenized_string in tokenized_strings:
+            input_field = TextField(tokenized_string[:-1], self._token_indexers)
+            output_field = TextField(tokenized_string[1:], [output_indexer])
             instances.append(Instance({'input_tokens': input_field,
                                        'output_tokens': output_field}))
         return Dataset(instances)

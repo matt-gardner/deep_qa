@@ -60,7 +60,7 @@ class TokenCharactersIndexer(TokenIndexer):
                            tokens: List[TokenType],
                            desired_num_tokens: int,
                            padding_lengths: Dict[str, int]) -> List[TokenType]:
-        padded_tokens = pad_sequence_to_length(tokens, desired_num_tokens, default_value=0)
+        padded_tokens = pad_sequence_to_length(tokens, desired_num_tokens, default_value=lambda: [])
         desired_token_length = padding_lengths['num_token_characters']
         longest_token = max(tokens, key=len)
         if desired_token_length > len(longest_token):

@@ -8,6 +8,13 @@ import tqdm
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 
 class _NamespaceDependentDefaultDict(defaultdict):
+    """
+    Using ``defaultdicts`` to handle namespaces is really convenient - you don't need to worry
+    about whether you've seen a particular namespace before in any of the methods in
+    ``Vocabulary``.  But because some namespaces need padding (like "tokens") and some don't (like
+    "labels"), we want different defaults depending on the namespace.  This lets us still use a
+    ``defaultdict``, but have different default values depending on the key that we're given.
+    """
     def __init__(self, non_padded_namespaces: List[str], padded_function, non_padded_function):
         self._non_padded_namespaces = non_padded_namespaces
         self._padded_function = padded_function
@@ -26,15 +33,14 @@ class _NamespaceDependentDefaultDict(defaultdict):
         dict.__setitem__(self, key, value)
 
 
-
-class _TokenToIndexDefaultDict(defaultdict):
+class _TokenToIndexDefaultDict(_NamespaceDependentDefaultDict):
     def __init__(self, non_padded_namespaces: List[str], padding_token: str, oov_token: str):
         super(_TokenToIndexDefaultDict, self).__init__(non_padded_namespaces,
                                                        lambda: {padding_token: 0, oov_token: 1},
                                                        lambda: {})
 
 
-class _IndexToTokenDefaultDict(defaultdict):
+class _IndexToTokenDefaultDict(_NamespaceDependentDefaultDict):
     def __init__(self, non_padded_namespaces: List[str], padding_token: str, oov_token: str):
         super(_IndexToTokenDefaultDict, self).__init__(non_padded_namespaces,
                                                        lambda: [padding_token, oov_token],
