@@ -34,11 +34,13 @@ class LabelField(Field):
 
     @overrides
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
-        counter[self._label_namespace][self._label] += 1
+        if self._label_id is None:
+            counter[self._label_namespace][self._label] += 1
 
     @overrides
     def index(self, vocab: Vocabulary):
-        self._label_id = vocab.get_token_index(self._label, self._label_namespace)
+        if self._label_id is None:
+            self._label_id = vocab.get_token_index(self._label, self._label_namespace)
 
     @overrides
     def get_padding_lengths(self) -> Dict[str, int]:
