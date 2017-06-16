@@ -70,6 +70,9 @@ class Dataset:
         has multiple ``Fields``, and each ``Field`` could have multiple things that need padding.
         We look at all fields in all instances, and find the max values for each (field_name,
         padding_key) pair, returning them in a dictionary.
+
+        This can then be used to convert this dataset into arrays of consistent length, or to set
+        model parameters, etc.
         """
         padding_lengths = defaultdict(dict)
         all_instance_lengths = [instance.get_padding_lengths() for instance in self.instances]
