@@ -27,6 +27,20 @@ class Field:
 
         If your ``Field`` does not have any strings that need to be converted into indices, you do
         not need to implement this method.
+
+        A note on this ``counter``: because ``Fields`` can represent conceptually different things,
+        we separate the vocabulary items by `namespaces`.  This way, we can use a single shared
+        mechanism to handle all mappings from strings to integers in all fields, while keeping
+        words in a ``TextField`` from sharing the same ids with labels in a ``LabelField`` (e.g.,
+        "entailment" or "contradiction" are labels in an entailment task)
+
+        Additionally, a single ``Field`` might want to use multiple namespaces - ``TextFields`` can
+        be represented as a combination of word ids and character ids, and you don't want words and
+        characters to share the same vocabulary - "a" as a word should get a different id from "a"
+        as a character, and the vocabulary sizes of words and characters are very different.
+
+        Because of this, the first key in the ``counter`` object is a `namespace`, like "tokens",
+        "token_characters", "tags", or "labels", and the second key is the actual vocabulary item.
         """
         pass
 
