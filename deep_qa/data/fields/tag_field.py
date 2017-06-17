@@ -19,6 +19,7 @@ class TagField(Field):
         self._sequence_field = sequence_field
         self._tag_namespace = tag_namespace
         self._indexed_tags = None
+        self._num_tags = None
         assert len(tags) == sequence_field.sequence_length(), "Tag length and sequence length " +\
                 "don't match: %d and %d" % (len(tags), sequence_field.sequence_length())
 
@@ -30,11 +31,11 @@ class TagField(Field):
     @overrides
     def index(self, vocab: Vocabulary):
         self._indexed_tags = [vocab.get_token_index(tag, self._tag_namespace) for tag in self._tags]
+        self._num_tags = vocab.get_vocab_size(self._tag_namespace)
 
     @overrides
     def get_padding_lengths(self) -> Dict[str, int]:
-        return {'num_tokens': self._sequence_field.sequence_length(),
-                'num_tags': max(self._indexed_tags)}
+        return {'num_tokens': self._sequence_field.sequence_length()}
 
     @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:
@@ -42,7 +43,7 @@ class TagField(Field):
         padded_tags = pad_sequence_to_length(self._indexed_tags, desired_num_tokens)
         one_hot_tags = []
         for tag in padded_tags:
-            one_hot_tag = [0] * padding_lengths['num_tags']
+            one_hot_tag = [0] * self._num_tags
             one_hot_tag[tag] = 1
             one_hot_tags.append(one_hot_tag)
         return numpy.asarray(one_hot_tags)

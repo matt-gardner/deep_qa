@@ -19,18 +19,24 @@ class LabelField(Field):
         The namespace to use for converting label strings into integers.  If you have multiple
         different label fields in your data, you should make sure you use different namespaces for
         each one.
-    index_labels : ``bool``, optional (default=``True``)
-        Do the labels need indexing?  If they are categorical labels, then this should be ``True``.
-        If they are already 0-indexed integers, set this to ``False``.
+    num_labels : ``int``, optional (default=``None``)
+        If your labels are 0-indexed integers, you can pass in the number of labels here, and we'll
+        skip the indexing step.  If this is ``None``, no matter the type of ``label``, we'll use a
+        vocabulary to give the labels new IDs.
     """
-    def __init__(self, label: Union[str, int], label_namespace: str='labels', index_labels: bool=True):
+    def __init__(self,
+                 label: Union[str, int],
+                 label_namespace: str='labels',
+                 num_labels: int=None):
         self._label = label
         self._label_namespace = label_namespace
-        if index_labels:
+        if num_labels is None:
             self._label_id = None
+            self._num_labels = None
         else:
             assert isinstance(label, int), "Labels must be ints if you want to skip indexing"
             self._label_id = label
+            self.num_labels = num_labels
 
     @overrides
     def count_vocab_items(self, counter: Dict[str, Dict[str, int]]):
@@ -41,17 +47,18 @@ class LabelField(Field):
     def index(self, vocab: Vocabulary):
         if self._label_id is None:
             self._label_id = vocab.get_token_index(self._label, self._label_namespace)
+            self._num_labels = vocab.get_vocab_size(self._label_namespace)
 
     @overrides
     def get_padding_lengths(self) -> Dict[str, int]:
-        return {'num_labels': self._label_id + 1}
+        return {}
 
     @overrides
     def pad(self, padding_lengths: Dict[str, int]) -> List[numpy.array]:
-        label_array = numpy.zeros(padding_lengths['num_labels'])
+        label_array = numpy.zeros(self._num_labels)
         label_array[self._label_id] = 1
         return [label_array]
 
     @overrides
     def empty_field(self):
-        return LabelField(0, 'labels', False)
+        return LabelField(0, self._label_namespace)
