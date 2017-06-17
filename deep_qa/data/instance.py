@@ -26,18 +26,16 @@ class Instance:
         Increments counts in the given ``counter`` for all of the vocabulary items in all of the
         ``Fields`` in this ``Instance``.
         """
-        for _, field in self._fields.items():
-            if field.needs_indexing():
-                field.count_vocab_items(counter)
+        for field in self._fields.values():
+            field.count_vocab_items(counter)
 
     def index_fields(self, vocab: Vocabulary):
         """
         Converts all ``UnindexedFields`` in this ``Instance`` to ``IndexedFields``, given the
         ``Vocabulary``.  This `mutates` the current object, it does not return a new ``Instance``.
         """
-        for _, field in self._fields.items():
-            if field.needs_indexing():
-                field.index(vocab)
+        for field in self._fields.values():
+            field.index(vocab)
 
     def get_padding_lengths(self) -> Dict[str, Dict[str, int]]:
         """
@@ -45,8 +43,8 @@ class Instance:
         mapping from padding keys to actual lengths, and we just key that dictionary by field name.
         """
         lengths = {}
-        for key, field in self._fields.items():
-            lengths[key] = field.get_padding_lengths()
+        for field_name, field in self._fields.items():
+            lengths[field_name] = field.get_padding_lengths()
         return lengths
 
     def pad(self, padding_lengths: Dict[str, Dict[str, int]]) -> Dict[str, List[numpy.array]]:
@@ -56,7 +54,6 @@ class Instance:
         :func:`get_padding_lengths`), returning a list of numpy arrays for each field.
         """
         arrays = {}
-        for key, field in self._fields.items():
-            field_lengths = padding_lengths.get(key, {})
-            arrays[key] = field.pad(field_lengths)
+        for field_name, field in self._fields.items():
+            arrays[field_name] = field.pad(padding_lengths[field_name])
         return arrays
